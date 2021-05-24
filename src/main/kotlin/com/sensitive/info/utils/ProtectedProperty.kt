@@ -1,4 +1,4 @@
-package com.sensitive.info
+package com.sensitive.info.utils
 
 import java.util.*
 import org.slf4j.LoggerFactory

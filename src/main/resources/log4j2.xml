@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="INFO" xmlns:xi="http://www.w3.org/2001/XInclude" packages="com.sensitive.info.appender">
+    <Appenders>
+        <CustomAppender name="CustomAppender" >
+            <PatternLayout>
+                <Pattern>%d{HH:mm:ss.SSS} [%t] %-5level - %msg%n</Pattern>
+<!--                <Pattern>%5p [${spring.zipkin.service.name:${spring.application.name:}},%X{traceId:-},%X{spanId:-}] [%X{cobis-traceability-id:-}]</Pattern>-->
+            </PatternLayout>
+        </CustomAppender>
+    </Appenders>
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="CustomAppender"/>
+        </Root>
+    </Loggers>
+</Configuration>
