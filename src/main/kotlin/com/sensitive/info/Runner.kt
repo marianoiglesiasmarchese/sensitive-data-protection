@@ -28,7 +28,7 @@ class Runner {
             number = 1023812094710923L,
             numberWithMoreVisibility = 1023812094710923L
         )
-        logger.info("Sensitive data protection --annotatedFields: {}", annotatedFields)
+        logger.info("Sensitive data protection --annotatedFields: [{}]", annotatedFields)
         logger.trace("A TRACE Message");
         logger.debug("A DEBUG Message");
         logger.info("An INFO Message --[{}] --[{}] --$annotatedFields", "param1", "param2");
@@ -42,8 +42,7 @@ data class AnnotatedFields(
     @field: HideDate val stringDate: String,
     @field: HideDate val date: LocalDate,
     @field: HideDate("dd/MM/yyyy") val dateWithPattern: LocalDate,
-    @field: HideEmail
-    val email: String,
+    @field: HideEmail val email: String,
     @field: HideText val text: String,
     @field: HideText(3) val textWithMoreVisibility: String,
     @field: HideNumber val number: Long,

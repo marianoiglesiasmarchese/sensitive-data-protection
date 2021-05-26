@@ -5,6 +5,18 @@ Sensitive data protection approach
 In order to don't leave in logs sensitive data information, this could be a good approach avoiding human mistakes during
 toString() overrides. 
 -----------------------------------
+## Known issues or pending tasks:
+* Sensitive fields annotations seems to be not detected
+* Custom sensitive object has a toString result with a different order
+* Check all the flow for the Custom sensitive object creation:
+  * inner class without @Sensitive annotation
+  * inner class with @Sensitive annotation
+* Try to replace the .xml by a .properties
+* Code comments enhancement and clean up
+* Sort classes and packages  
+* See how to add this to maven/gradle repositories
+* See how to make this run within an app that uses it as dependency
+
 ## Current state:
 LogEvent with no alterations:
 -----------------------------------
@@ -30,31 +42,7 @@ Process finished with exit code 0
 ```
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
-LogEvent with parameters swap alterations:
------------------------------------
------------------------------------
-```
-.   ____          _            __ _ _
-/\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
-( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
-\\/  ___)| |_)| | | | | || (_| |  ) ) ) )
-'  |____| .__|_| |_|_| |_\__, | / / / /
-=========|_|==============|___/=/_/_/_/
-:: Spring Boot ::                (v2.4.5)
-
-16:27:07.356 [main] INFO  - Starting InfoApplicationKt using Java 13.0.5.1 on mariano with PID 63843 (/home/mariano/Documents/my projects/sensitive-data-protection/target/classes started by mariano in /home/mariano/Documents/my projects/sensitive-data-protection)
-16:27:07.609 [main] INFO  - No active profile set, falling back to default profiles: default
-16:27:08.410 [main] INFO  - Started InfoApplicationKt in 1.451 seconds (JVM running for 2.395)
-16:27:08.418 [main] INFO  - Sensitive data protection --annotatedFields: AnnotatedFields(stringDate=22/03/1990, date=2021-05-24, dateWithPattern=2021-05-24, email=mariano@test.com, text=some long text, textWithMoreVisibility=some long text, number=1023812094710923, numberWithMoreVisibility=1023812094710923)
-16:27:08.461 [main] INFO  - An INFO Message --[param1] --[param2] --AnnotatedFields(stringDate=22/03/1990, date=2021-05-24, dateWithPattern=2021-05-24, email=mariano@test.com, text=some long text, textWithMoreVisibility=some long text, number=1023812094710923, numberWithMoreVisibility=1023812094710923)
-16:27:08.462 [main] WARN  - A WARN Message
-16:27:08.462 [main] ERROR - An ERROR Message
-
-Process finished with exit code 0
-```
--------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-LogEvent with parameters swap alterations and parameters printed:
+LogEvent with message replaced by custom object:
 -----------------------------------
 -----------------------------------
 ```
@@ -66,25 +54,24 @@ LogEvent with parameters swap alterations and parameters printed:
  =========|_|==============|___/=/_/_/_/
  :: Spring Boot ::                (v2.4.5)
 
-17:15:17.227 [main] INFO  - Starting InfoApplicationKt using Java 13.0.5.1 on mariano with PID 153983 (/home/mariano/Documents/my projects/sensitive-data-protection/target/classes started by mariano in /home/mariano/Documents/my projects/sensitive-data-protection)
-17:15:17.472 [main] INFO  - No active profile set, falling back to default profiles: default
-17:15:18.291 [main] INFO  - Started InfoApplicationKt in 1.462 seconds (JVM running for 2.338)
-[AnnotatedFields([date=2021-05-24, , dateWithPattern=2021-05-24, , email=mariano@test.com, , number=1023812094710923, , numberWithMoreVisibility=1023812094710923, , stringDate=22/03/1990, ])]
-17:15:18.300 [main] INFO  - Sensitive data protection --annotatedFields: [AnnotatedFields([date=2021-05-24, , dateWithPattern=2021-05-24, , email=mariano@test.com, , number=1023812094710923, , numberWithMoreVisibility=1023812094710923, , stringDate=22/03/1990, ])]
-17:15:18.352 [main] INFO  - An INFO Message --[param1] --[param2] --AnnotatedFields(stringDate=22/03/1990, date=2021-05-24, dateWithPattern=2021-05-24, email=mariano@test.com, text=some long text, textWithMoreVisibility=some long text, number=1023812094710923, numberWithMoreVisibility=1023812094710923)
-17:15:18.353 [main] WARN  - A WARN Message
-17:15:18.353 [main] ERROR - An ERROR Message
+22:40:16.577 [main] INFO  - Starting InfoApplicationKt using Java 13.0.5.1 on mariano with PID 1093582 (/home/mariano/Documents/my projects/sensitive-data-protection/target/classes started by mariano in /home/mariano/Documents/my projects/sensitive-data-protection)
+22:40:16.855 [main] INFO  - No active profile set, falling back to default profiles: default
+22:40:17.617 [main] INFO  - Started InfoApplicationKt in 1.4 seconds (JVM running for 2.476)
+22:40:17.623 [main] INFO  - Sensitive data protection --annotatedFields: [AnnotatedFields(date=2021-05-25, dateWithPattern=2021-05-25, email=mariano@test.com, number=1023812094710923, numberWithMoreVisibility=1023812094710923, stringDate=22/03/1990, text=some long text, textWithMoreVisibility=some long text)]
+22:40:17.660 [main] INFO  - An INFO Message --[param1] --[param2] --AnnotatedFields(stringDate=22/03/1990, date=2021-05-25, dateWithPattern=2021-05-25, email=mariano@test.com, text=some long text, textWithMoreVisibility=some long text, number=1023812094710923, numberWithMoreVisibility=1023812094710923)
+22:40:17.660 [main] WARN  - A WARN Message
+22:40:17.660 [main] ERROR - An ERROR Message
 
 Process finished with exit code 0
 ```
 
 Regular parameter after toString:
 ```
-AnnotatedFields(stringDate=22/03/1990, date=2021-05-24, dateWithPattern=2021-05-24, email=mariano@test.com, text=some long text, textWithMoreVisibility=some long text, number=1023812094710923, numberWithMoreVisibility=1023812094710923)
+AnnotatedFields(stringDate=22/03/1990, date=2021-05-25, dateWithPattern=2021-05-25, email=mariano@test.com, text=some long text, textWithMoreVisibility=some long text, number=1023812094710923, numberWithMoreVisibility=1023812094710923
 ```
 Custom parameter after toString:
 ```
-[AnnotatedFields([date=2021-05-24, , dateWithPattern=2021-05-24, , email=mariano@test.com, , number=1023812094710923, , numberWithMoreVisibility=1023812094710923, , stringDate=22/03/1990, ])]
+AnnotatedFields(date=2021-05-25, dateWithPattern=2021-05-25, email=mariano@test.com, number=1023812094710923, numberWithMoreVisibility=1023812094710923, stringDate=22/03/1990, text=some long text, textWithMoreVisibility=some long text)
 ```
 ---------------
 ## Possible log4j2 file approaches:

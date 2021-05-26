@@ -9,17 +9,18 @@ import com.sensitive.info.utils.Sensitive
 import java.util.*
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.createType
-import kotlin.reflect.full.memberProperties
+import kotlin.reflect.full.declaredMemberProperties
 
 data class DynamicClass(
-    private val attributes: MutableMap<String, Any> = mutableMapOf()
+    private val attributes: MutableMap<String, Any> = LinkedHashMap()
 ) {
 
     companion object {
         private val CONVERTIBLE_TYPES =
             listOf(Long::class.createType(), String::class.createType(), Date::class.createType())
         private const val CLASS_NAME_PROPERTY = "class_name_prop"
-        private val SENSITIVE_ANNOTATIONS = listOf(HideDate::class.java, HideEmail::class.java)
+        private val SENSITIVE_ANNOTATIONS =
+            listOf(HideDate::class.java, HideEmail::class.java, HideText::class.java, HideNumber::class.java)
 
         /**
          * previamente tuvimos que evaluar en el CustomAppender que la clase tenía la annotation
@@ -27,14 +28,18 @@ data class DynamicClass(
         fun of(obj: Any): DynamicClass {
             val dynamicClass = DynamicClass()
             // recorrer properties del objeto
-            obj::class.memberProperties.forEach { field ->
+            obj::class.declaredMemberProperties.forEach { field ->
                 // aquellos que no sean de primer nivel (son un objeto), pedir la creación del mapa
                 if (field.returnType !in CONVERTIBLE_TYPES) {
                     // of(obj.property_not_convertible)
                     of(dynamicClass.attributes, field.name, field.getter.call(obj)!!)
                 } else {
                     // aquellos que son de primer nivel (CONVERTIBLE_TYPES)
-                    val sensitiveAnnotated: Annotation? = field.annotations.find { it in SENSITIVE_ANNOTATIONS } // TODO check types mismatch
+                    // TODO it seems that the annotations are not detected
+//                    println("field.annotations = ${field.annotations}")
+//                    println("field.getter.annotations = ${field.getter.annotations}")
+                    val sensitiveAnnotated: Annotation? =
+                        field.annotations.find { it in SENSITIVE_ANNOTATIONS } // TODO check types mismatch
                     // si tiene alguna annotation,
                     sensitiveAnnotated?.also { annotation ->
                         //  agregarlos a attributes (con atributos que sean atributos protegidos con las configuracion que amerite (ProtectedProperty.kt))
@@ -94,7 +99,7 @@ data class DynamicClass(
 
     private fun getObjectInnerContent(toPrint: Map<String, Any>): String {
         var className = ""
-        val objAttributes: MutableList<String> = mutableListOf()
+        val objAttributes: MutableList<String> = ArrayList()
         toPrint.forEach { (key, value) ->
             if (value is Map<*, *>) {
                 getObjectInnerContent(value as Map<String, Any>)
@@ -106,7 +111,10 @@ data class DynamicClass(
                 }
             }
         }
-        return "$className(${objAttributes.subList(0, objAttributes.size - 2)})" // TODO remove [] from objAttributes
+        var result = "$className("
+        objAttributes.map { result = result.plus(it) }
+        result = result.substring(0, result.length - 2).plus(")")
+        return result // TODO check order of the attributes
     }
 
 }

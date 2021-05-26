@@ -19,6 +19,8 @@ import org.apache.logging.log4j.core.config.plugins.PluginAttribute
 import org.apache.logging.log4j.core.config.plugins.PluginElement
 import org.apache.logging.log4j.core.config.plugins.PluginFactory
 import org.apache.logging.log4j.core.impl.MutableLogEvent
+import org.apache.logging.log4j.message.Message
+import org.apache.logging.log4j.message.ReusableMessage
 import org.apache.logging.log4j.message.ReusableMessageFactory
 import org.apache.logging.log4j.message.ReusableParameterizedMessage
 
@@ -124,8 +126,11 @@ class CustomAppender(
          *      In addition, it seems that the message.format is erased after swapProperties()
          */
         if (parameters.filterIsInstance<DynamicClass>().isNotEmpty()) {
-            val message = ReusableMessageFactory.INSTANCE.newMessage(event.message.format, parameters)
-            println(parameters)
+            val message = if (parameters.size == 1)
+                ReusableMessageFactory.INSTANCE.newMessage(event.message.format, parameters[0])
+            else
+                ReusableMessageFactory.INSTANCE.newMessage(event.message.format, parameters)
+//            println("parameters: $parameters")
             (event as MutableLogEvent).message = message
         }
 
