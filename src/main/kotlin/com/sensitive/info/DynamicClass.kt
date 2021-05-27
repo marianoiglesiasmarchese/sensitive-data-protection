@@ -10,6 +10,7 @@ import java.util.*
 import kotlin.reflect.KProperty
 import kotlin.reflect.full.createType
 import kotlin.reflect.full.declaredMemberProperties
+import kotlin.reflect.full.primaryConstructor
 
 data class DynamicClass(
     private val attributes: MutableMap<String, Any> = LinkedHashMap()
@@ -28,24 +29,27 @@ data class DynamicClass(
         fun of(obj: Any): DynamicClass {
             val dynamicClass = DynamicClass()
             // recorrer properties del objeto
-            obj::class.declaredMemberProperties.forEach { field ->
+//            obj::class.java.declaredFields   // to get natural order
+//            obj::class.declaredMemberProperties // to get alphabetical order
+            obj::class.primaryConstructor?.parameters?.forEach { parameter ->
                 // aquellos que no sean de primer nivel (son un objeto), pedir la creación del mapa
-                if (field.returnType !in CONVERTIBLE_TYPES) {
+                val field = obj::class.declaredMemberProperties.find { it.name == parameter.name }
+                if (field?.returnType !in CONVERTIBLE_TYPES) {
                     // of(obj.property_not_convertible)
-                    of(dynamicClass.attributes, field.name, field.getter.call(obj)!!)
+                    of(dynamicClass.attributes, field?.name!!, field.getter.call(obj)!!)
                 } else {
                     // aquellos que son de primer nivel (CONVERTIBLE_TYPES)
                     // TODO it seems that the annotations are not detected
 //                    println("field.annotations = ${field.annotations}")
 //                    println("field.getter.annotations = ${field.getter.annotations}")
                     val sensitiveAnnotated: Annotation? =
-                        field.annotations.find { it in SENSITIVE_ANNOTATIONS } // TODO check types mismatch
+                        field?.annotations?.find { it in SENSITIVE_ANNOTATIONS } // TODO check types mismatch
                     // si tiene alguna annotation,
                     sensitiveAnnotated?.also { annotation ->
                         //  agregarlos a attributes (con atributos que sean atributos protegidos con las configuracion que amerite (ProtectedProperty.kt))
                         addSensitiveAnnotatedAttribute(annotation, field, dynamicClass.attributes)
                     } ?: dynamicClass.attributes.put(
-                        field.name,
+                        field?.name!!,
                         field.getter.call(obj)!!
                     ) // si no tiene annotation, //  agregarlos a attributes
                 }
@@ -56,12 +60,12 @@ data class DynamicClass(
         }
 
         private fun of(attributes: MutableMap<String, Any>, fieldName: String, obj: Any) {
-            val attribute = if (obj::class.annotations.filterIsInstance<Sensitive>().isNotEmpty()) {
-                mutableMapOf(fieldName to of(obj))
+            val pair = if (obj::class.annotations.filterIsInstance<Sensitive>().isNotEmpty()) {
+                fieldName to of(obj)
             } else {
-                mutableMapOf(fieldName to obj)
+                fieldName to obj
             }
-            attributes.putAll(attribute)
+            attributes[pair.first] = pair.second
         }
 
         private fun addSensitiveAnnotatedAttribute(
@@ -98,23 +102,19 @@ data class DynamicClass(
     override fun toString() = getObjectInnerContent(attributes)
 
     private fun getObjectInnerContent(toPrint: Map<String, Any>): String {
-        var className = ""
-        val objAttributes: MutableList<String> = ArrayList()
+        var result = "{className}("
         toPrint.forEach { (key, value) ->
             if (value is Map<*, *>) {
                 getObjectInnerContent(value as Map<String, Any>)
             } else {
                 if (key == CLASS_NAME_PROPERTY) {
-                    className = value.toString()
+                    result = result.replace("{className}", value.toString())
                 } else {
-                    objAttributes.add("$key=${value.toString()}, ")
+                    result = result.plus("$key=${value.toString()}, ")
                 }
             }
         }
-        var result = "$className("
-        objAttributes.map { result = result.plus(it) }
         result = result.substring(0, result.length - 2).plus(")")
         return result // TODO check order of the attributes
     }
-
 }

@@ -7,7 +7,7 @@ toString() overrides.
 -----------------------------------
 ## Known issues or pending tasks:
 * Sensitive fields annotations seems to be not detected
-* Custom sensitive object has a toString result with a different order
+* [x] Custom sensitive object has a toString result with a different order
 * Check all the flow for the Custom sensitive object creation:
   * inner class without @Sensitive annotation
   * inner class with @Sensitive annotation
