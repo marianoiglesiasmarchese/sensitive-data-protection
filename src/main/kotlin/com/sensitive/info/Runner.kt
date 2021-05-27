@@ -39,7 +39,7 @@ class Runner {
 
 @Sensitive
 data class AnnotatedFields(
-    @field: HideDate val stringDate: String,
+    @param: HideDate val stringDate: String,
     @field: HideDate val date: LocalDate,
     @field: HideDate("dd/MM/yyyy") val dateWithPattern: LocalDate,
     @field: HideEmail val email: String,

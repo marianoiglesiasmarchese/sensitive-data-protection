@@ -115,6 +115,6 @@ data class DynamicClass(
             }
         }
         result = result.substring(0, result.length - 2).plus(")")
-        return result // TODO check order of the attributes
+        return result
     }
 }

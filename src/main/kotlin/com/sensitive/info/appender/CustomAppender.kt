@@ -52,7 +52,7 @@ class CustomAppender(
         fun createAppender(
             @PluginAttribute("name") name: String,
             // @PluginElement("Layout") Layout layout,
-            @PluginElement("Layout") layout: Layout<*>,
+            @PluginElement("Layout") layout: Layout<*>,  // TODO check layout functionality
             @PluginElement("Filter") filter: Filter?
         ): CustomAppender {
 //            if (name == null) {
@@ -96,11 +96,7 @@ class CustomAppender(
             if (it::class.annotations.filterIsInstance<Sensitive>().isNotEmpty()) {
 //            if (it::class.annotations.contains(Sensitive::class.java)) {
                 // build dynamicClass
-                /**
-                 *  TODO DynamicClass has some issues to be solved but up to this point the main goal is to force
-                 *      the message format as described down below
-                 */
-                parameters.add(DynamicClass.of(it))
+                parameters.add(DynamicClass.of(it))  // TODO to improve performance KAPT Kotlin Annotation Processing ... (basically, adding static code in compiling time.
             } else {
                 parameters.add(it)
             }
@@ -120,11 +116,6 @@ class CustomAppender(
 //        var message = MutableLogEvent(str, parameters.toTypedArray()).message
 
 //        ModelHelper.mergeFields(event.message, message)
-
-        /**
-         *  TODO despite the parameters manipulation the message.formattedMessage is still the previous one, so we have to force the formatting.
-         *      In addition, it seems that the message.format is erased after swapProperties()
-         */
         if (parameters.filterIsInstance<DynamicClass>().isNotEmpty()) {
             val message = if (parameters.size == 1)
                 ReusableMessageFactory.INSTANCE.newMessage(event.message.format, parameters[0])

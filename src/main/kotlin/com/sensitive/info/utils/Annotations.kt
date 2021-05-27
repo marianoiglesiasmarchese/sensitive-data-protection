@@ -6,7 +6,7 @@ package com.sensitive.info.utils
 @Target(AnnotationTarget.CLASS)
 annotation class Sensitive
 
-@Target(AnnotationTarget.FIELD, AnnotationTarget.FUNCTION)
+@Target(AnnotationTarget.FIELD, AnnotationTarget.FUNCTION, AnnotationTarget.VALUE_PARAMETER)
 annotation class HideDate(val pattern: String = "MM/dd/yyyy")
 
 @Target(AnnotationTarget.FIELD, AnnotationTarget.FUNCTION)

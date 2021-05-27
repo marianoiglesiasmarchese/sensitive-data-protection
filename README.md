@@ -12,10 +12,13 @@ toString() overrides.
   * inner class without @Sensitive annotation
   * inner class with @Sensitive annotation
 * Try to replace the .xml by a .properties
-* Code comments enhancement and clean up
-* Sort classes and packages  
+* Check layout functionality
+* Code comments enhancement and code clean up
+* Clean up classes and packages
 * See how to add this to maven/gradle repositories
 * See how to make this run within an app that uses it as dependency
+* Improve performance (analyze KAPT to run code on compiling time)
+* Enhance ProtectedProperty static methods support
 
 ## Current state:
 LogEvent with no alterations:
@@ -65,14 +68,6 @@ LogEvent with message replaced by custom object:
 Process finished with exit code 0
 ```
 
-Regular parameter after toString:
-```
-AnnotatedFields(stringDate=22/03/1990, date=2021-05-25, dateWithPattern=2021-05-25, email=mariano@test.com, text=some long text, textWithMoreVisibility=some long text, number=1023812094710923, numberWithMoreVisibility=1023812094710923
-```
-Custom parameter after toString:
-```
-AnnotatedFields(date=2021-05-25, dateWithPattern=2021-05-25, email=mariano@test.com, number=1023812094710923, numberWithMoreVisibility=1023812094710923, stringDate=22/03/1990, text=some long text, textWithMoreVisibility=some long text)
-```
 ---------------
 ## Possible log4j2 file approaches:
 ## log4j2.xml
