@@ -107,3 +107,5 @@ logger.appLogger.level=INFO
 logger.appLogger.appenderRefs=customAppender
 logger.appLogger.appenderRef.customAppender.ref=CUSTOMAPPENDER
 ```
+## If you wanna test it with a huge set of logs
+just add `-Dkotlinx.coroutines.debug` as part of the VM options 

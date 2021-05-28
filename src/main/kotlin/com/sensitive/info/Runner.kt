@@ -6,6 +6,10 @@ import com.sensitive.info.utils.HideNumber
 import com.sensitive.info.utils.HideText
 import com.sensitive.info.utils.Sensitive
 import java.time.LocalDate
+import kotlinx.coroutines.CoroutineName
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.slf4j.LoggerFactory
 import org.springframework.boot.CommandLineRunner
 import org.springframework.context.annotation.Bean
@@ -28,6 +32,15 @@ class Runner {
             number = 1023812094710923L,
             numberWithMoreVisibility = 1023812094710923L
         )
+//        runBlocking {
+////            repeat(100_000) { // launch a lot of coroutines
+//            repeat(100000) { // launch a lot of coroutines
+//                launch(CoroutineName(it.toString())) {
+////                    delay(5000L)
+//                    logger.info("Sensitive data protection --annotatedFields: [{}]", annotatedFields)
+//                }
+//            }
+//        }
         logger.info("Sensitive data protection --annotatedFields: [{}]", annotatedFields)
         logger.trace("A TRACE Message");
         logger.debug("A DEBUG Message");

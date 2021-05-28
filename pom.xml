@@ -43,6 +43,19 @@
 			<scope>test</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>org.jetbrains.kotlinx</groupId>
+			<artifactId>kotlinx-coroutines-core</artifactId>
+			<version>1.0.1</version>
+		</dependency>
+
+<!--		<repositories>-->
+<!--			<repository>-->
+<!--				<id>central</id>-->
+<!--				<url>http://jcenter.bintray.com</url>-->
+<!--			</repository>-->
+<!--		</repositories>-->
+
 <!--		<dependency>-->
 <!--			<groupId>org.springframework.boot</groupId>-->
 <!--			<artifactId>spring-boot-starter-web</artifactId>-->
