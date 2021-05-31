@@ -1,9 +1,9 @@
 # sensitive-data-protection
+-----------------------------------
+This project targets to those who had troubles making good code once 
+they faced the management of sensitive data information 
+within the Java/Kotlin application logs
 
-Sensitive data protection approach
-
-In order to don't leave in logs sensitive data information, this could be a good approach avoiding human mistakes during
-toString() overrides. 
 -----------------------------------
 ## Known issues or pending tasks:
 * [x] Sensitive fields annotations seems to be not detected
@@ -17,13 +17,14 @@ toString() overrides.
 * Check layout functionality
 * See how to add this to maven/gradle repositories
 * See how to make this run within an app that uses it as dependency
+-----------------------------------
+## Future improvements:
 * Improve performance (analyze KAPT to run code on compiling time)
 * Enhance ProtectedField static methods support
 * Enhance ProtectedField configuration with annotation metadata
-
+-----------------------------------
 ## Current state:
 LogEvent with no alterations:
------------------------------------
 -----------------------------------
 ```
 .   ____          _            __ _ _
@@ -44,11 +45,10 @@ LogEvent with no alterations:
 
 Process finished with exit code 0
 ```
--------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 LogEvent with message replaced by custom object:
 -----------------------------------
------------------------------------
+
 ```
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -72,7 +72,7 @@ Process finished with exit code 0
 
 ---------------
 ## Possible log4j2 file approaches:
-## log4j2.xml
+log4j2.xml
 ---------------
 ```
 <?xml version="1.0" encoding="UTF-8"?>
@@ -87,7 +87,7 @@ Process finished with exit code 0
     </Loggers>
 </Configuration>
 ```
-## log4j2.properties
+log4j2.properties
 -----------------------
 ```
 name=PropertiesConfig
@@ -109,6 +109,7 @@ logger.appLogger.level=INFO
 logger.appLogger.appenderRefs=customAppender
 logger.appLogger.appenderRef.customAppender.ref=CUSTOMAPPENDER
 ``` 
+-----------------------------------
 ## Constraints
 * classes with @Sensitive and some sensitive field annotation will be obfuscated
 * by field only one sensitive annotation is allowed 
