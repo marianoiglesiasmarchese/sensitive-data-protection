@@ -1,4 +1,4 @@
-package com.sensitive.info.utils
+package com.sensitive.info.obfuscation
 
 import java.text.DateFormat
 import java.text.SimpleDateFormat

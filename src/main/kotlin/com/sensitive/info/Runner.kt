@@ -1,10 +1,10 @@
 package com.sensitive.info
 
-import com.sensitive.info.utils.HideDate
-import com.sensitive.info.utils.HideEmail
-import com.sensitive.info.utils.HideNumber
-import com.sensitive.info.utils.HideText
-import com.sensitive.info.utils.Sensitive
+import com.sensitive.info.annotation.HideDate
+import com.sensitive.info.annotation.HideEmail
+import com.sensitive.info.annotation.HideNumber
+import com.sensitive.info.annotation.HideText
+import com.sensitive.info.annotation.Sensitive
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking

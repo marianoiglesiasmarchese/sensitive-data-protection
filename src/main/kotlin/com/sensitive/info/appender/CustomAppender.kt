@@ -1,7 +1,7 @@
 package com.sensitive.info.appender
 
-import com.sensitive.info.DynamicClass
-import com.sensitive.info.utils.Sensitive
+import com.sensitive.info.annotation.Sensitive
+import com.sensitive.info.obfuscation.DynamicClass
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.apache.logging.log4j.core.Appender

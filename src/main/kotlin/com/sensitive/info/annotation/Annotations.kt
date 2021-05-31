@@ -1,4 +1,4 @@
-package com.sensitive.info.utils
+package com.sensitive.info.annotation
 
 /**
  * TODO Constraint: this annotation should be tagged through all the path of classes that want to be protected

@@ -1,11 +1,10 @@
-package com.sensitive.info
+package com.sensitive.info.obfuscation
 
-import com.sensitive.info.utils.HideDate
-import com.sensitive.info.utils.HideEmail
-import com.sensitive.info.utils.HideNumber
-import com.sensitive.info.utils.HideText
-import com.sensitive.info.utils.ProtectedField
-import com.sensitive.info.utils.Sensitive
+import com.sensitive.info.annotation.HideDate
+import com.sensitive.info.annotation.HideEmail
+import com.sensitive.info.annotation.HideNumber
+import com.sensitive.info.annotation.HideText
+import com.sensitive.info.annotation.Sensitive
 import java.lang.reflect.Field
 import java.time.LocalDate
 import java.util.Date

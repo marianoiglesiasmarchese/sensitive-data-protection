@@ -1,4 +1,4 @@
-package com.sensitive.info.utils
+package com.sensitive.info.obfuscation
 
 import java.time.LocalDate
 import java.util.Date
