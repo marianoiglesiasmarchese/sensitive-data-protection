@@ -1,7 +1,7 @@
 package com.sensitive.info.annotation
 
 /**
- * TODO Constraint: this annotation should be tagged through all the path of classes that want to be protected
+ * This annotation should be tagged through all the path of classes that want to be protected
  */
 @Target(AnnotationTarget.CLASS)
 annotation class Sensitive

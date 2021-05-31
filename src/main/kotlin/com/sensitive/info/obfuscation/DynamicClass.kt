@@ -33,7 +33,6 @@ data class DynamicClass(
                     of(dynamicClass.attributes, field?.name!!, field.get(obj)!!)
                 } else {
                     // for those which are supported field types get the field sensitive annotation
-                    // TODO Constraint only one sensitive annotation is allowed by field
                     val sensitiveAnnotated: Annotation? =
                         field?.declaredAnnotations?.find { it.annotationClass in SENSITIVE_ANNOTATIONS }
                     // if the field has some field sensitive annotation

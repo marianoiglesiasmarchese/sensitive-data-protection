@@ -109,3 +109,7 @@ logger.appLogger.level=INFO
 logger.appLogger.appenderRefs=customAppender
 logger.appLogger.appenderRef.customAppender.ref=CUSTOMAPPENDER
 ``` 
+## Constraints
+* classes with @Sensitive and some sensitive field annotation will be obfuscated
+* by field only one sensitive annotation is allowed 
+* @Sensitive should be through all the path of classes that want to be protected
