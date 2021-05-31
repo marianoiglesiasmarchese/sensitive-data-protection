@@ -4,13 +4,11 @@ import com.sensitive.info.utils.HideDate
 import com.sensitive.info.utils.HideEmail
 import com.sensitive.info.utils.HideNumber
 import com.sensitive.info.utils.HideText
-import com.sensitive.info.utils.ProtectedProperty
+import com.sensitive.info.utils.ProtectedField
 import com.sensitive.info.utils.Sensitive
-import java.util.*
-import kotlin.reflect.KProperty
-import kotlin.reflect.full.createType
-import kotlin.reflect.full.declaredMemberProperties
-import kotlin.reflect.full.primaryConstructor
+import java.lang.reflect.Field
+import java.time.LocalDate
+import java.util.Date
 
 data class DynamicClass(
     private val attributes: MutableMap<String, Any> = LinkedHashMap()
@@ -18,43 +16,38 @@ data class DynamicClass(
 
     companion object {
         private val CONVERTIBLE_TYPES =
-            listOf(Long::class.createType(), String::class.createType(), Date::class.createType())
+            listOf(Long::class.java, String::class.java, Date::class.java, LocalDate::class.java)
         private const val CLASS_NAME_PROPERTY = "class_name_prop"
         private val SENSITIVE_ANNOTATIONS =
-            listOf(HideDate::class.java, HideEmail::class.java, HideText::class.java, HideNumber::class.java)
+            listOf(HideDate::class, HideEmail::class, HideText::class, HideNumber::class)
 
         /**
-         * previamente tuvimos que evaluar en el CustomAppender que la clase tenía la annotation
+         * we had to evaluate previously at CustomAppender level, that the log parameter had the @Sensitive annotation
          */
         fun of(obj: Any): DynamicClass {
             val dynamicClass = DynamicClass()
-            // recorrer properties del objeto
-//            obj::class.java.declaredFields   // to get natural order
-//            obj::class.declaredMemberProperties // to get alphabetical order
-            obj::class.primaryConstructor?.parameters?.forEach { parameter ->
-                // aquellos que no sean de primer nivel (son un objeto), pedir la creación del mapa
-                val field = obj::class.declaredMemberProperties.find { it.name == parameter.name }
-                if (field?.returnType !in CONVERTIBLE_TYPES) {
-                    // of(obj.property_not_convertible)
-                    of(dynamicClass.attributes, field?.name!!, field.getter.call(obj)!!)
+            // go over object fields
+            obj::class.java.declaredFields.forEach { field ->
+                field.isAccessible = true
+                if (!CONVERTIBLE_TYPES.contains(field?.type)) {
+                    // for those which not fields request map creation
+                    of(dynamicClass.attributes, field?.name!!, field.get(obj)!!)
                 } else {
-                    // aquellos que son de primer nivel (CONVERTIBLE_TYPES)
-                    // TODO it seems that the annotations are not detected
-//                    println("field.annotations = ${field.annotations}")
-//                    println("field.getter.annotations = ${field.getter.annotations}")
+                    // for those which are supported field types get the field sensitive annotation
+                    // TODO Constraint only one sensitive annotation is allowed by field
                     val sensitiveAnnotated: Annotation? =
-                        field?.annotations?.find { it in SENSITIVE_ANNOTATIONS } // TODO check types mismatch
-                    // si tiene alguna annotation,
+                        field?.declaredAnnotations?.find { it.annotationClass in SENSITIVE_ANNOTATIONS }
+                    // if the field has some field sensitive annotation
                     sensitiveAnnotated?.also { annotation ->
-                        //  agregarlos a attributes (con atributos que sean atributos protegidos con las configuracion que amerite (ProtectedProperty.kt))
-                        addSensitiveAnnotatedAttribute(annotation, field, dynamicClass.attributes)
+                        //  add to attributes a sensitive field instead of the original
+                        addSensitiveAnnotatedAttribute(annotation, obj, field, dynamicClass.attributes)
                     } ?: dynamicClass.attributes.put(
                         field?.name!!,
-                        field.getter.call(obj)!!
-                    ) // si no tiene annotation, //  agregarlos a attributes
+                        field.get(obj)!!
+                    ) // if it doesn't have any field sensitive annotation, add the field to attributes
                 }
             }
-            // agregar el class name al mapa this.javaClass.simpleName y diferenciarlo con el nombre CLASS_NAME_PROPERTY
+            // add the class name to the map tagged as CLASS_NAME_PROPERTY
             dynamicClass.attributes[CLASS_NAME_PROPERTY] = obj.javaClass.simpleName
             return dynamicClass
         }
@@ -68,32 +61,33 @@ data class DynamicClass(
             attributes[pair.first] = pair.second
         }
 
+        /**
+         * chose which protected field fits to the field annotation definition
+         * TODO enhance each ProtectedField configuration with annotation metadata
+         */
         private fun addSensitiveAnnotatedAttribute(
             annotation: Annotation,
-            field: KProperty<*>,
+            obj: Any,
+            field: Field,
             attributes: MutableMap<String, Any>
         ) {
-            val value: Any?
+            val value = field.get(obj)
             when (annotation) {
                 is HideDate -> {
-                    value = field.getter.call(field)
-                    if (value in listOf(String::class, Date::class))
-                        attributes[field.name] = ProtectedProperty.ProtectedDateProperty(value)
+                    if (value is String || value is Date || value is LocalDate)  // TODO try to improve this line
+                        attributes[field.name] = ProtectedField.ProtectedDateField(value)
                 }
                 is HideEmail -> {
-                    value = field.getter.call(field)
                     if (value is String)
-                        attributes[field.name] = ProtectedProperty.ProtectedEmailProperty(value)
+                        attributes[field.name] = ProtectedField.ProtectedEmailField(value)
                 }
                 is HideNumber -> {
-                    value = field.getter.call(field)
                     if (value is Long)
-                        attributes[field.name] = ProtectedProperty.ProtectedNumberProperty(value)
+                        attributes[field.name] = ProtectedField.ProtectedNumberField(value)
                 }
                 is HideText -> {
-                    value = field.getter.call(field)
                     if (value is String)
-                        attributes[field.name] = ProtectedProperty.ProtectedTextProperty(value)
+                        attributes[field.name] = ProtectedField.ProtectedTextField(value)
                 }
             }
         }
@@ -105,16 +99,24 @@ data class DynamicClass(
         var result = "{className}("
         toPrint.forEach { (key, value) ->
             if (value is Map<*, *>) {
-                getObjectInnerContent(value as Map<String, Any>)
+                // the root object was an object
+                if (value.keys.contains(CLASS_NAME_PROPERTY)) {
+                    getObjectInnerContent(value as Map<String, Any>)
+                } else { // the root object was a map
+                    result = addNewAttributeToString(result, key, value)
+                }
             } else {
-                if (key == CLASS_NAME_PROPERTY) {
-                    result = result.replace("{className}", value.toString())
+                result = if (key == CLASS_NAME_PROPERTY) {
+                    result.replace("{className}", value.toString())
                 } else {
-                    result = result.plus("$key=${value.toString()}, ")
+                    addNewAttributeToString(result, key, value)
                 }
             }
         }
         result = result.substring(0, result.length - 2).plus(")")
         return result
     }
+
+    private fun addNewAttributeToString(str: String, key: String, value: Any): String =
+        str.plus("$key=${value.toString()}, ")
 }

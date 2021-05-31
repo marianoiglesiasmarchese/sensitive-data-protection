@@ -24,7 +24,6 @@ import org.apache.logging.log4j.message.ReusableMessage
 import org.apache.logging.log4j.message.ReusableMessageFactory
 import org.apache.logging.log4j.message.ReusableParameterizedMessage
 
-
 @Plugin(name = "CustomAppender", category = Core.CATEGORY_NAME, elementType = Appender.ELEMENT_TYPE, printObject = true)
 class CustomAppender(
     name: String?,
@@ -94,45 +93,22 @@ class CustomAppender(
         event.message.parameters.forEach {
             // if some of the arguments has @Sensitive annotation
             if (it::class.annotations.filterIsInstance<Sensitive>().isNotEmpty()) {
-//            if (it::class.annotations.contains(Sensitive::class.java)) {
                 // build dynamicClass
-                parameters.add(DynamicClass.of(it))  // TODO to improve performance KAPT Kotlin Annotation Processing ... (basically, adding static code in compiling time.
+                // TODO to improve performance KAPT Kotlin Annotation Processing ... (basically, adding static code in compiling time.
+                parameters.add(DynamicClass.of(it))
             } else {
                 parameters.add(it)
             }
         }
         // replace arguments within LogEvent
-//        println(event.message.format)
-//        val str: StringBuilder = if (event.message.format.isNullOrBlank()) {
-//            StringBuilder()
-//        } else {
-//            StringBuilder(event.message.format)
-//        }
-//        val castedEvent = MutableLogEvent(str, parameters.toTypedArray())
-//        var message = SimpleMessageFactory.INSTANCE.newMessage(event.message.format, parameters)
-
-//        message = SimpleMessage(event.message.format)
-//        message.formatTo(str)
-//        var message = MutableLogEvent(str, parameters.toTypedArray()).message
-
-//        ModelHelper.mergeFields(event.message, message)
         if (parameters.filterIsInstance<DynamicClass>().isNotEmpty()) {
             val message = if (parameters.size == 1)
                 ReusableMessageFactory.INSTANCE.newMessage(event.message.format, parameters[0])
             else
                 ReusableMessageFactory.INSTANCE.newMessage(event.message.format, parameters)
-//            println("parameters: $parameters")
+            //  println("parameters: $parameters")
             (event as MutableLogEvent).message = message
         }
-
-//        println(event.message)
-//        println(event.message.format)
-//        println(event.message.parameters.size)
-//        println(event.message.formattedMessage)
-
-//        Log4jLogEvent.newBuilder().setLevel(event.level).setMessage(message).build()
-//        public Log4jLogEvent(String loggerName, Marker marker, String loggerFQCN, StackTraceElement source, Level level, Message message, List<Property> properties, Throwable t) {
-//        return Log4jLogEvent.newBuilder().setLevel(event.level).setMessage(message).build()
         return event
     }
 }

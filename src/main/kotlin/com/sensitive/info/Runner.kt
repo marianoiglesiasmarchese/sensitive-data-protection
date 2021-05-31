@@ -7,7 +7,6 @@ import com.sensitive.info.utils.HideText
 import com.sensitive.info.utils.Sensitive
 import java.time.LocalDate
 import kotlinx.coroutines.CoroutineName
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import org.slf4j.LoggerFactory
@@ -30,17 +29,21 @@ class Runner {
             text = "some long text",
             textWithMoreVisibility = "some long text",
             number = 1023812094710923L,
-            numberWithMoreVisibility = 1023812094710923L
+            numberWithMoreVisibility = 1023812094710923L,
+            annotatedInnerClass = AnnotatedInnerClass(
+                someText = "some text within inner class"
+            ),
+            notAnnotatedInnerClass = NotAnnotatedInnerClass(
+                text = "not annotates inner class text",
+                date = LocalDate.now(),
+                double = 30.0
+            )
         )
-//        runBlocking {
-////            repeat(100_000) { // launch a lot of coroutines
-//            repeat(100000) { // launch a lot of coroutines
-//                launch(CoroutineName(it.toString())) {
-////                    delay(5000L)
-//                    logger.info("Sensitive data protection --annotatedFields: [{}]", annotatedFields)
-//                }
-//            }
-//        }
+        testIt(annotatedFields)
+//         testPerformanceWithCoroutines(annotatedFields)
+    }
+
+    private fun testIt(annotatedFields: AnnotatedFields) {
         logger.info("Sensitive data protection --annotatedFields: [{}]", annotatedFields)
         logger.trace("A TRACE Message");
         logger.debug("A DEBUG Message");
@@ -48,16 +51,44 @@ class Runner {
         logger.warn("A WARN Message");
         logger.error("An ERROR Message");
     }
+
+    /**
+     * If you wanna test it with a huge set of logs just add `-Dkotlinx.coroutines.debug` as part of the VM options
+     */
+    private fun testPerformanceWithCoroutines(annotatedFields: AnnotatedFields) {
+        runBlocking {
+            repeat(100000) { // launch a lot of coroutines
+                launch(CoroutineName(it.toString())) {
+                    logger.info("Sensitive data protection --annotatedFields: [{}]", annotatedFields)
+                }
+            }
+        }
+    }
 }
 
 @Sensitive
 data class AnnotatedFields(
-    @param: HideDate val stringDate: String,
+    @field: HideDate val stringDate: String,
     @field: HideDate val date: LocalDate,
     @field: HideDate("dd/MM/yyyy") val dateWithPattern: LocalDate,
     @field: HideEmail val email: String,
     @field: HideText val text: String,
     @field: HideText(3) val textWithMoreVisibility: String,
     @field: HideNumber val number: Long,
-    @field: HideNumber(3) val numberWithMoreVisibility: Long
+    @field: HideNumber(3) val numberWithMoreVisibility: Long,
+    val annotatedInnerClass: AnnotatedInnerClass,
+    val notAnnotatedInnerClass: NotAnnotatedInnerClass
+)
+
+@Sensitive
+data class AnnotatedInnerClass(
+    @field: HideText val someText: String,
+    val map: Map<String,String> = emptyMap(),
+    val list: List<String> = emptyList()
+)
+
+data class NotAnnotatedInnerClass(
+    val text: String,
+    val date: LocalDate,
+    val double: Double
 )

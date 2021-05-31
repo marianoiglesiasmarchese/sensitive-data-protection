@@ -6,19 +6,20 @@ In order to don't leave in logs sensitive data information, this could be a good
 toString() overrides. 
 -----------------------------------
 ## Known issues or pending tasks:
-* Sensitive fields annotations seems to be not detected
+* [x] Sensitive fields annotations seems to be not detected
 * [x] Custom sensitive object has a toString result with a different order
-* Check all the flow for the Custom sensitive object creation:
-  * inner class without @Sensitive annotation
-  * inner class with @Sensitive annotation
+* [x] Check all the flow for the Custom sensitive object creation:
+  * [x] inner class without @Sensitive annotation
+  * [x] inner class with @Sensitive annotation
+* [x] Code comments enhancement and code clean up
+* [x] Clean up classes and packages
 * Try to replace the .xml by a .properties
 * Check layout functionality
-* Code comments enhancement and code clean up
-* Clean up classes and packages
 * See how to add this to maven/gradle repositories
 * See how to make this run within an app that uses it as dependency
 * Improve performance (analyze KAPT to run code on compiling time)
-* Enhance ProtectedProperty static methods support
+* Enhance ProtectedField static methods support
+* Enhance ProtectedField configuration with annotation metadata
 
 ## Current state:
 LogEvent with no alterations:
@@ -57,15 +58,16 @@ LogEvent with message replaced by custom object:
  =========|_|==============|___/=/_/_/_/
  :: Spring Boot ::                (v2.4.5)
 
-22:40:16.577 [main] INFO  - Starting InfoApplicationKt using Java 13.0.5.1 on mariano with PID 1093582 (/home/mariano/Documents/my projects/sensitive-data-protection/target/classes started by mariano in /home/mariano/Documents/my projects/sensitive-data-protection)
-22:40:16.855 [main] INFO  - No active profile set, falling back to default profiles: default
-22:40:17.617 [main] INFO  - Started InfoApplicationKt in 1.4 seconds (JVM running for 2.476)
-22:40:17.623 [main] INFO  - Sensitive data protection --annotatedFields: [AnnotatedFields(date=2021-05-25, dateWithPattern=2021-05-25, email=mariano@test.com, number=1023812094710923, numberWithMoreVisibility=1023812094710923, stringDate=22/03/1990, text=some long text, textWithMoreVisibility=some long text)]
-22:40:17.660 [main] INFO  - An INFO Message --[param1] --[param2] --AnnotatedFields(stringDate=22/03/1990, date=2021-05-25, dateWithPattern=2021-05-25, email=mariano@test.com, text=some long text, textWithMoreVisibility=some long text, number=1023812094710923, numberWithMoreVisibility=1023812094710923)
-22:40:17.660 [main] WARN  - A WARN Message
-22:40:17.660 [main] ERROR - An ERROR Message
+22:06:01.324 [main] INFO  - Starting InfoApplicationKt using Java 13.0.5.1 on mariano with PID 392127 (/home/mariano/Documents/my projects/sensitive-data-protection/target/classes started by mariano in /home/mariano/Documents/my projects/sensitive-data-protection)
+22:06:01.575 [main] INFO  - No active profile set, falling back to default profiles: default
+22:06:02.300 [main] INFO  - Started InfoApplicationKt in 1.305 seconds (JVM running for 2.256)
+22:06:02.307 [main] INFO  - Sensitive data protection --annotatedFields: [AnnotatedFields(stringDate=**/**/****, date=***LOCAL_DATE_OBFUSCATION_ERROR***, dateWithPattern=***LOCAL_DATE_OBFUSCATION_ERROR***, email=mari***@test.com, text=so** **** **xt, textWithMoreVisibility=so** **** **xt, number=102**********923, numberWithMoreVisibility=102**********923, annotatedInnerClass=AnnotatedInnerClass(someText=so** **** ****** ***** ***ss, map={}, list=[]), notAnnotatedInnerClass=NotAnnotatedInnerClass(text=not annotates inner class text, date=2021-05-30, double=30.0))]
+22:06:02.329 [main] INFO  - An INFO Message --[param1] --[param2] --AnnotatedFields(stringDate=22/03/1990, date=2021-05-30, dateWithPattern=2021-05-30, email=mariano@test.com, text=some long text, textWithMoreVisibility=some long text, number=1023812094710923, numberWithMoreVisibility=1023812094710923, annotatedInnerClass=AnnotatedInnerClass(someText=some text within inner class, map={}, list=[]), notAnnotatedInnerClass=NotAnnotatedInnerClass(text=not annotates inner class text, date=2021-05-30, double=30.0))
+22:06:02.337 [main] WARN  - A WARN Message
+22:06:02.337 [main] ERROR - An ERROR Message
 
 Process finished with exit code 0
+
 ```
 
 ---------------
@@ -106,6 +108,4 @@ logger.appLogger.name=sensitive.data.protection
 logger.appLogger.level=INFO
 logger.appLogger.appenderRefs=customAppender
 logger.appLogger.appenderRef.customAppender.ref=CUSTOMAPPENDER
-```
-## If you wanna test it with a huge set of logs
-just add `-Dkotlinx.coroutines.debug` as part of the VM options 
+``` 

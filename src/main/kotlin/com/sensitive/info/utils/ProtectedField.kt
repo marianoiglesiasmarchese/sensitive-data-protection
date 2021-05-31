@@ -1,9 +1,9 @@
 package com.sensitive.info.utils
 
-import java.util.*
-import org.slf4j.LoggerFactory
+import java.time.LocalDate
+import java.util.Date
 
-sealed class ProtectedProperty {
+sealed class ProtectedField {
 
     enum class SensitiveDataRegex(val regex: Regex) {
         // Capture Group 1: first 4 chars - public email chars, it should be public on logs
@@ -19,9 +19,6 @@ sealed class ProtectedProperty {
     }
 
     companion object {
-
-        private val logger = LoggerFactory.getLogger(ProtectedProperty::class.java)
-        private val CLASS = ProtectedProperty::class.simpleName
 
         /**
          * This implementation supports numbers longer than 7 digits
@@ -39,9 +36,7 @@ sealed class ProtectedProperty {
                     hiddenChars
                 )
             } catch (ex: Exception) {
-                logger.error("--$CLASS:hideNumber --Exception --cause[{}]", ex.cause)
-                logger.error("--$CLASS:hideNumber --Exception --message[{}]", ex.message)
-                "***OBFUSCATION_ERROR***"
+                "***LONG_OBFUSCATION_ERROR***"
             }
         }
 
@@ -55,9 +50,7 @@ sealed class ProtectedProperty {
                     .replace(SensitiveDataRegex.ONLY_CHARACTERS_REGEX.regex, "*")
                 text.replaceRange(showFirstAndLastChars, text.length - showFirstAndLastChars, hiddenChars)
             } catch (ex: Exception) {
-                logger.error("--$CLASS:hideText --Exception --cause[{}]", ex.cause)
-                logger.error("--$CLASS:hideText --Exception --message[{}]", ex.message)
-                "***OBFUSCATION_ERROR***"
+                "***TEXT_OBFUSCATION_ERROR***"
             }
         }
 
@@ -65,9 +58,7 @@ sealed class ProtectedProperty {
             return try {
                 date.replace(SensitiveDataRegex.ONLY_DIGITS_REGEX.regex, "*")
             } catch (ex: Exception) {
-                logger.error("--$CLASS:hideDate --Exception --cause[{}]", ex.cause)
-                logger.error("--$CLASS:hideDate --Exception --message[{}]", ex.message)
-                "***OBFUSCATION_ERROR***"
+                "***STRING_DATE_OBFUSCATION_ERROR***"
             }
         }
 
@@ -75,46 +66,49 @@ sealed class ProtectedProperty {
             return try {
                 DateUtil.convertDateToString(date, pattern).replace(SensitiveDataRegex.ONLY_DIGITS_REGEX.regex, "*")
             } catch (ex: Exception) {
-                logger.error("--$CLASS:hideDate --Exception --cause[{}]", ex.cause)
-                logger.error("--$CLASS:hideDate --Exception --message[{}]", ex.message)
-                "***OBFUSCATION_ERROR***"
+                "***DATE_OBFUSCATION_ERROR***"
+            }
+        }
+
+        fun hideDate(date: LocalDate, pattern: String = "MM/dd/yyyy"): String {
+            return try {
+                DateUtil.convertDateToString(date, pattern).replace(SensitiveDataRegex.ONLY_DIGITS_REGEX.regex, "*")
+            } catch (ex: Exception) {
+                "***LOCAL_DATE_OBFUSCATION_ERROR***"
             }
         }
 
         fun hideEmail(email: String): String {
-            return SensitiveDataRegex.EMAIL_SENSITIVE_POSITION_GROUPS.regex.find(email)?.let {
-                val matchedValues = it.groupValues
-                try {
-                    val publicChars = matchedValues[1]
-                    val hiddenChars = matchedValues[2].replace(Regex("."), "*")
-                    val domainName = matchedValues[3]
-                    publicChars + hiddenChars + domainName
-                } catch (ex: Exception) {
-                    logger.error("--$CLASS:hideEmail --Exception --cause[{}]", ex.cause)
-                    logger.error("--$CLASS:hideEmail --Exception --message[{}]", ex.message)
-                    "***OBFUSCATION_ERROR***"
-                }
-            }.orEmpty()
+            return try {
+                val matchedValues = SensitiveDataRegex.EMAIL_SENSITIVE_POSITION_GROUPS.regex.find(email)?.groupValues!!
+                val publicChars = matchedValues[1]
+                val hiddenChars = matchedValues[2].replace(Regex("."), "*")
+                val domainName = matchedValues[3]
+                publicChars + hiddenChars + domainName
+            } catch (ex: Exception) {
+                "***EMAIL_OBFUSCATION_ERROR***"
+            }
         }
     }
 
-    class ProtectedEmailProperty(private val email: String) : ProtectedProperty() {
+    class ProtectedEmailField(private val email: String) : ProtectedField() {
         override fun toString() = hideEmail(email)
     }
 
-    class ProtectedDateProperty<T>(private val date: T) : ProtectedProperty() {
+    class ProtectedDateField<T>(private val date: T) : ProtectedField() {
         override fun toString() = when (date) {
             is Date -> hideDate(date)
             is String -> hideDate(date)
+            is LocalDate -> hideDate(date)
             else -> "Date format not supported"
         }
     }
 
-    class ProtectedTextProperty(private val text: String) : ProtectedProperty() {
+    class ProtectedTextField(private val text: String) : ProtectedField() {
         override fun toString() = hideText(text)
     }
 
-    class ProtectedNumberProperty(private val number: Long) : ProtectedProperty() {
+    class ProtectedNumberField(private val number: Long) : ProtectedField() {
         override fun toString() = hideNumber(number)
     }
 }
