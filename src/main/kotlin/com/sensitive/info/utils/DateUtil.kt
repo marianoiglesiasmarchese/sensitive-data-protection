@@ -4,7 +4,6 @@ import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.Date
-import org.slf4j.LoggerFactory
 
 object DateUtil {
 
@@ -20,7 +19,6 @@ object DateUtil {
         // representation of a date with the defined format.
         return df.format(date)
     }
-
 
     /**
      * This function allow us to convert a LocalDate to a String. You can either indicate your custom pattern or

@@ -5,7 +5,6 @@ import com.sensitive.info.utils.HideEmail
 import com.sensitive.info.utils.HideNumber
 import com.sensitive.info.utils.HideText
 import com.sensitive.info.utils.Sensitive
-import java.time.LocalDate
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -13,6 +12,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.boot.CommandLineRunner
 import org.springframework.context.annotation.Bean
 import org.springframework.stereotype.Component
+import java.time.LocalDate
 
 @Component
 class Runner {
@@ -45,11 +45,11 @@ class Runner {
 
     private fun testIt(annotatedFields: AnnotatedFields) {
         logger.info("Sensitive data protection --annotatedFields: [{}]", annotatedFields)
-        logger.trace("A TRACE Message");
-        logger.debug("A DEBUG Message");
-        logger.info("An INFO Message --[{}] --[{}] --$annotatedFields", "param1", "param2");
-        logger.warn("A WARN Message");
-        logger.error("An ERROR Message");
+        logger.trace("A TRACE Message")
+        logger.debug("A DEBUG Message")
+        logger.info("An INFO Message --[{}] --[{}] --$annotatedFields", "param1", "param2")
+        logger.warn("A WARN Message")
+        logger.error("An ERROR Message")
     }
 
     /**
@@ -83,7 +83,7 @@ data class AnnotatedFields(
 @Sensitive
 data class AnnotatedInnerClass(
     @field: HideText val someText: String,
-    val map: Map<String,String> = emptyMap(),
+    val map: Map<String, String> = emptyMap(),
     val list: List<String> = emptyList()
 )
 

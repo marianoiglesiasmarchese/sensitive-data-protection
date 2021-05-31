@@ -74,7 +74,7 @@ data class DynamicClass(
             val value = field.get(obj)
             when (annotation) {
                 is HideDate -> {
-                    if (value is String || value is Date || value is LocalDate)  // TODO try to improve this line
+                    if (value is String || value is Date || value is LocalDate) // TODO try to improve this line
                         attributes[field.name] = ProtectedField.ProtectedDateField(value)
                 }
                 is HideEmail -> {
@@ -118,5 +118,5 @@ data class DynamicClass(
     }
 
     private fun addNewAttributeToString(str: String, key: String, value: Any): String =
-        str.plus("$key=${value.toString()}, ")
+        str.plus("$key=$value, ")
 }

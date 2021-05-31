@@ -2,9 +2,6 @@ package com.sensitive.info.appender
 
 import com.sensitive.info.DynamicClass
 import com.sensitive.info.utils.Sensitive
-import java.util.concurrent.locks.Lock
-import java.util.concurrent.locks.ReadWriteLock
-import java.util.concurrent.locks.ReentrantReadWriteLock
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import org.apache.logging.log4j.core.Appender
@@ -19,10 +16,10 @@ import org.apache.logging.log4j.core.config.plugins.PluginAttribute
 import org.apache.logging.log4j.core.config.plugins.PluginElement
 import org.apache.logging.log4j.core.config.plugins.PluginFactory
 import org.apache.logging.log4j.core.impl.MutableLogEvent
-import org.apache.logging.log4j.message.Message
-import org.apache.logging.log4j.message.ReusableMessage
 import org.apache.logging.log4j.message.ReusableMessageFactory
-import org.apache.logging.log4j.message.ReusableParameterizedMessage
+import java.util.concurrent.locks.Lock
+import java.util.concurrent.locks.ReadWriteLock
+import java.util.concurrent.locks.ReentrantReadWriteLock
 
 @Plugin(name = "CustomAppender", category = Core.CATEGORY_NAME, elementType = Appender.ELEMENT_TYPE, printObject = true)
 class CustomAppender(
@@ -45,13 +42,12 @@ class CustomAppender(
         private val rwLock: ReadWriteLock = ReentrantReadWriteLock()
         private val readLock: Lock = rwLock.readLock()
 
-
         @PluginFactory
         @JvmStatic
         fun createAppender(
             @PluginAttribute("name") name: String,
             // @PluginElement("Layout") Layout layout,
-            @PluginElement("Layout") layout: Layout<*>,  // TODO check layout functionality
+            @PluginElement("Layout") layout: Layout<*>, // TODO check layout functionality
             @PluginElement("Filter") filter: Filter?
         ): CustomAppender {
 //            if (name == null) {
@@ -82,7 +78,6 @@ class CustomAppender(
         } finally {
             readLock.unlock()
         }
-
     }
 
     /**
@@ -112,4 +107,3 @@ class CustomAppender(
         return event
     }
 }
-
