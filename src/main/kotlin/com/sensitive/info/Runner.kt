@@ -5,6 +5,7 @@ import com.sensitive.info.annotation.HideEmail
 import com.sensitive.info.annotation.HideNumber
 import com.sensitive.info.annotation.HideText
 import com.sensitive.info.annotation.Sensitive
+import java.time.LocalDate
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -12,7 +13,6 @@ import org.slf4j.LoggerFactory
 import org.springframework.boot.CommandLineRunner
 import org.springframework.context.annotation.Bean
 import org.springframework.stereotype.Component
-import java.time.LocalDate
 
 @Component
 class Runner {
@@ -39,8 +39,29 @@ class Runner {
                 double = 30.0
             )
         )
-        testIt(annotatedFields)
-//         testPerformanceWithCoroutines(annotatedFields)
+        val fields = Fields(
+            stringDate = "22/03/1990",
+            date = LocalDate.now(),
+            dateWithPattern = LocalDate.now(),
+            email = "mariano@test.com",
+            text = "some long text",
+            textWithMoreVisibility = "some long text",
+            number = 1023812094710923L,
+            numberWithMoreVisibility = 1023812094710923L,
+            annotatedInnerClass = InnerClass(
+                someText = "some text within inner class"
+            ),
+            notAnnotatedInnerClass = InnerClass2(
+                text = "not annotates inner class text",
+                date = LocalDate.now(),
+                double = 30.0
+            )
+        )
+//        testIt(annotatedFields)
+        val elapsedTimeAnnotatedFields = testPerformanceWithCoroutines(annotatedFields)
+        val elapsedTime = testPerformanceWithCoroutines(fields)
+        logger.info("Sensitive data protection --annotatedFields --elapsedTime: [{} seconds]", elapsedTimeAnnotatedFields / 1000)
+        logger.info("Sensitive data protection --nonAnnotatedFields --elapsedTime: [{} seconds]", elapsedTime / 1000)
     }
 
     private fun testIt(annotatedFields: AnnotatedFields) {
@@ -55,14 +76,16 @@ class Runner {
     /**
      * If you wanna test it with a huge set of logs just add `-Dkotlinx.coroutines.debug` as part of the VM options
      */
-    private fun testPerformanceWithCoroutines(annotatedFields: AnnotatedFields) {
+    private fun testPerformanceWithCoroutines(testClass: Any): Double {
+        val start = System.nanoTime()
         runBlocking {
             repeat(100000) { // launch a lot of coroutines
                 launch(CoroutineName(it.toString())) {
-                    logger.info("Sensitive data protection --annotatedFields: [{}]", annotatedFields)
+                    logger.info("Sensitive data protection --annotatedFields: [{}]", testClass)
                 }
             }
         }
+        return ((System.nanoTime().toDouble() - start) / 1000000)
     }
 }
 
@@ -88,6 +111,31 @@ data class AnnotatedInnerClass(
 )
 
 data class NotAnnotatedInnerClass(
+    val text: String,
+    val date: LocalDate,
+    val double: Double
+)
+
+data class Fields(
+    val stringDate: String,
+    val date: LocalDate,
+    val dateWithPattern: LocalDate,
+    val email: String,
+    val text: String,
+    val textWithMoreVisibility: String,
+    val number: Long,
+    val numberWithMoreVisibility: Long,
+    val annotatedInnerClass: InnerClass,
+    val notAnnotatedInnerClass: InnerClass2
+)
+
+data class InnerClass(
+    val someText: String,
+    val map: Map<String, String> = emptyMap(),
+    val list: List<String> = emptyList()
+)
+
+data class InnerClass2(
     val text: String,
     val date: LocalDate,
     val double: Double
