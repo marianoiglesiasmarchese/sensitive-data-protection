@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.sensitive</groupId>
 	<artifactId>info</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.1</version>
 	<name>info</name>
 	<description>Sensitive information obfuscation project</description>
 	<properties>

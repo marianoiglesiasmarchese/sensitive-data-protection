@@ -58,6 +58,10 @@ class Runner {
             )
         )
 //        testIt(annotatedFields)
+        performanceTest(annotatedFields, fields)
+    }
+
+    private fun performanceTest(annotatedFields: AnnotatedFields, fields: Fields) {
         val elapsedTimeAnnotatedFields = testPerformanceWithCoroutines(annotatedFields)
         val elapsedTime = testPerformanceWithCoroutines(fields)
         logger.info("Sensitive data protection --annotatedFields --elapsedTime: [{} seconds]", elapsedTimeAnnotatedFields / 1000)

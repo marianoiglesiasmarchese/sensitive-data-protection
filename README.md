@@ -114,3 +114,14 @@ logger.appLogger.appenderRef.customAppender.ref=CUSTOMAPPENDER
 * classes with @Sensitive and some sensitive field annotation will be obfuscated
 * by field only one sensitive annotation is allowed 
 * @Sensitive should be through all the path of classes that want to be protected
+-----------------------------------
+## Performance
+### original
+```
+21:05:11.247 [main] INFO  - Sensitive data protection --nonAnnotatedFields --elapsedTime: [1.0628922399999998 seconds]
+21:05:11.251 [main] INFO  - Sensitive data protection --annotatedFields --elapsedTime: [5.8533793020000005 seconds]
+```
+### improved
+```
+
+```
