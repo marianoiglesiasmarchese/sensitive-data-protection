@@ -1,0 +1,3 @@
+[submodule "auto-value-redacted"]
+	path = auto-value-redacted
+	url = git@github.com:square/auto-value-redacted.git
