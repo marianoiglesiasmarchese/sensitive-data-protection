@@ -5,6 +5,7 @@ import com.sensitive.info.annotation.HideEmail
 import com.sensitive.info.annotation.HideNumber
 import com.sensitive.info.annotation.HideText
 import com.sensitive.info.annotation.Sensitive
+import com.sensitive.info.obfuscation.ProtectedField
 import java.time.LocalDate
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.launch
@@ -13,6 +14,8 @@ import org.slf4j.LoggerFactory
 import org.springframework.boot.CommandLineRunner
 import org.springframework.context.annotation.Bean
 import org.springframework.stereotype.Component
+import kotlin.system.measureTimeMillis
+import kotlin.time.measureTime
 
 @Component
 class Runner {
@@ -57,15 +60,37 @@ class Runner {
                 double = 30.0
             )
         )
+        val overriddenFields = OverriddenFields(
+            stringDate = "22/03/1990",
+            date = LocalDate.now(),
+            dateWithPattern = LocalDate.now(),
+            email = "mariano@test.com",
+            text = "some long text",
+            textWithMoreVisibility = "some long text",
+            number = 1023812094710923L,
+            numberWithMoreVisibility = 1023812094710923L,
+            annotatedInnerClass = OverriddenInnerClass(
+                someText = "some text within inner class"
+            ),
+            notAnnotatedInnerClass = OverriddenInnerClass2(
+                text = "not annotates inner class text",
+                date = LocalDate.now(),
+                double = 30.0
+            )
+        )
 //        testIt(annotatedFields)
-        performanceTest(annotatedFields, fields)
+        performanceTest(annotatedFields, fields, overriddenFields)
     }
 
-    private fun performanceTest(annotatedFields: AnnotatedFields, fields: Fields) {
-        val elapsedTimeAnnotatedFields = testPerformanceWithCoroutines(annotatedFields)
+    private fun performanceTest(annotatedFields: AnnotatedFields, fields: Fields, overriddenFields: OverriddenFields) {
+        val warmingTime =testPerformanceWithCoroutines("pre warming")
         val elapsedTime = testPerformanceWithCoroutines(fields)
-        logger.info("Sensitive data protection --annotatedFields --elapsedTime: [{} seconds]", elapsedTimeAnnotatedFields / 1000)
+        val elapsedTimeForOverriddenFields = testPerformanceWithCoroutines(overriddenFields)
+        val elapsedTimeAnnotatedFields = testPerformanceWithCoroutines(annotatedFields)
+        logger.info("Sensitive data protection --warmingTime --elapsedTime: [{} seconds]", warmingTime / 1000)
         logger.info("Sensitive data protection --nonAnnotatedFields --elapsedTime: [{} seconds]", elapsedTime / 1000)
+        logger.info("Sensitive data protection --overriddenFields --elapsedTime: [{} seconds]", elapsedTimeForOverriddenFields / 1000)
+        logger.info("Sensitive data protection --annotatedFields --elapsedTime: [{} seconds]", elapsedTimeAnnotatedFields / 1000)
     }
 
     private fun testIt(annotatedFields: AnnotatedFields) {
@@ -140,6 +165,54 @@ data class InnerClass(
 )
 
 data class InnerClass2(
+    val text: String,
+    val date: LocalDate,
+    val double: Double
+)
+
+data class OverriddenFields(
+    val stringDate: String,
+    val date: LocalDate,
+    val dateWithPattern: LocalDate,
+    val email: String,
+    val text: String,
+    val textWithMoreVisibility: String,
+    val number: Long,
+    val numberWithMoreVisibility: Long,
+    val annotatedInnerClass: OverriddenInnerClass,
+    val notAnnotatedInnerClass: OverriddenInnerClass2
+) {
+    override fun toString(): String {
+        return "${this.javaClass.simpleName}(" +
+                "stringDate=${ProtectedField.hideDate(stringDate)}, " +
+                "date=${ProtectedField.hideDate(date)}, " +
+                "dateWithPattern=${ProtectedField.hideDate(dateWithPattern)}, " +
+                "email=${ProtectedField.hideEmail(email)}, " +
+                "text=${ProtectedField.hideText(text)}, " +
+                "textWithMoreVisibility=${ProtectedField.hideText(textWithMoreVisibility)}, " +
+                "number=${ProtectedField.hideNumber(number)}, " +
+                "numberWithMoreVisibility=${ProtectedField.hideNumber(numberWithMoreVisibility)}, " +
+                "annotatedInnerClass=$annotatedInnerClass, " +
+                "notAnnotatedInnerClass=$notAnnotatedInnerClass" +
+                ")"
+    }
+}
+
+data class OverriddenInnerClass(
+    val someText: String,
+    val map: Map<String, String> = emptyMap(),
+    val list: List<String> = emptyList()
+) {
+    override fun toString(): String {
+        return "${this.javaClass.simpleName}(" +
+                "someText=${ProtectedField.hideText(someText)}, " +
+                "map=$map, " +
+                "list=$list" +
+                ")"
+    }
+}
+
+data class OverriddenInnerClass2(
     val text: String,
     val date: LocalDate,
     val double: Double
