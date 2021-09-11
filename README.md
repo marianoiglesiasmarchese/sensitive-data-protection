@@ -13,13 +13,23 @@ within the Java/Kotlin application logs
   * [x] inner class with @Sensitive annotation
 * [x] Code comments enhancement and code clean up
 * [x] Clean up classes and packages
-* Try to replace the .xml by a .properties
-* Check layout functionality
 * See how to add this to maven/gradle repositories
 * See how to make this run within an app that uses it as dependency
+  * Validate visibility of annotations
+  * Validate layout configuration overwrite
+* Try to replace the .xml by a .properties
+* Check layout functionality
+* Improve readme, describe:
+  * scope
+  * how to use it
+  * performance constraints
+  * licence
+  * publish it in networks (Github, Linkedin, Blog)
 -----------------------------------
 ## Future improvements:
 * Improve performance (analyze KAPT to run code on compiling time)
+  * [x] Project profiling to detect bottlenecks 
+  * Custom appender should handle concurrent events 
 * Enhance ProtectedField static methods support
 * Enhance ProtectedField configuration with annotation metadata
 -----------------------------------
@@ -116,12 +126,19 @@ logger.appLogger.appenderRef.customAppender.ref=CUSTOMAPPENDER
 * @Sensitive should be through all the path of classes that want to be protected
 -----------------------------------
 ## Performance
-### original
+All the tests were performed with 100K coroutines running at once.
+### original 
 ```
 21:05:11.247 [main] INFO  - Sensitive data protection --nonAnnotatedFields --elapsedTime: [1.0628922399999998 seconds]
 21:05:11.251 [main] INFO  - Sensitive data protection --annotatedFields --elapsedTime: [5.8533793020000005 seconds]
 ```
-### improved
+### improved without concurrent event logging
 ```
-
+18:45:11.039 [main] INFO  - Sensitive data protection --warmingTime --elapsedTime: [1.342950412 seconds]
+18:45:11.042 [main] INFO  - Sensitive data protection --nonAnnotatedFields --elapsedTime: [1.158640054 seconds]
+18:45:11.042 [main] INFO  - Sensitive data protection --overriddenFields --elapsedTime: [2.008003098 seconds]
+18:45:11.042 [main] INFO  - Sensitive data protection --annotatedFields --elapsedTime: [2.165369831 seconds]
+```
+### improved with concurrent event logging
+```
 ```
