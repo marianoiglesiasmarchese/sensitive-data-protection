@@ -76,7 +76,7 @@ data class DynamicClass(
          */
         private fun addSensitiveAnnotatedAttribute(
             result: String,
-            annotation: Annotation,   // TODO see how to group annotation under some kind of hierarchy
+            annotation: Annotation, // TODO see how to group annotation under some kind of hierarchy
             obj: Any,
             field: Field
         ): String {
@@ -120,7 +120,7 @@ data class DynamicClass(
                     else
                         fieldProtectionNotSupported(result, field.name)
                 }
-                else -> {  // TODO this case shouldn't happen
+                else -> { // TODO this case shouldn't happen
                     fieldProtectionNotSupported(result, field.name)
                 }
             }

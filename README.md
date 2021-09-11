@@ -13,25 +13,25 @@ within the Java/Kotlin application logs
   * [x] inner class with @Sensitive annotation
 * [x] Code comments enhancement and code clean up
 * [x] Clean up classes and packages
-* See how to add this to maven/gradle repositories
-* See how to make this run within an app that uses it as dependency
-  * Validate visibility of annotations
-  * Validate layout configuration overwrite
-* Try to replace the .xml by a .properties
-* Check layout functionality
-* Improve readme, describe:
-  * scope
-  * how to use it
-  * performance constraints
-  * licence
-  * publish it in networks (Github, Linkedin, Blog)
+* [ ] See how to add this to maven/gradle repositories
+* [ ] See how to make this run within an app that uses it as dependency
+  * [x] Validate visibility of annotations
+  * [ ] Validate layout configuration overwrite
+* [ ] Check layout functionality
+* [ ] Try to replace the .xml by a .properties
+* [ ] Improve readme, describe:
+  * [ ] scope
+  * [ ] how to use it
+  * [ ] performance constraints
+  * [ ] licence
+  * [ ] publish it in our networks (Github, Linkedin, Blog)
 -----------------------------------
 ## Future improvements:
-* Improve performance (analyze KAPT to run code on compiling time)
+* [ ] Improve performance (analyze KAPT to run code on compiling time)
   * [x] Project profiling to detect bottlenecks 
-  * Custom appender should handle concurrent events 
-* Enhance ProtectedField static methods support
-* Enhance ProtectedField configuration with annotation metadata
+  * [ ] Custom appender should handle concurrent events 
+* [ ] Enhance ProtectedField static methods support
+* [ ] Enhance ProtectedField configuration with annotation metadata
 -----------------------------------
 ## Current state:
 LogEvent with no alterations:

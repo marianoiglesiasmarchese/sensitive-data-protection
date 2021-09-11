@@ -6,7 +6,6 @@ import com.sensitive.info.annotation.HideNumber
 import com.sensitive.info.annotation.HideText
 import com.sensitive.info.annotation.Sensitive
 import com.sensitive.info.obfuscation.ProtectedField
-import java.time.LocalDate
 import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -14,8 +13,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.boot.CommandLineRunner
 import org.springframework.context.annotation.Bean
 import org.springframework.stereotype.Component
-import kotlin.system.measureTimeMillis
-import kotlin.time.measureTime
+import java.time.LocalDate
 
 @Component
 class Runner {
@@ -79,11 +77,11 @@ class Runner {
             )
         )
 //        testIt(annotatedFields)
-        performanceTest(annotatedFields, fields, overriddenFields)
+//        performanceTest(annotatedFields, fields, overriddenFields)
     }
 
     private fun performanceTest(annotatedFields: AnnotatedFields, fields: Fields, overriddenFields: OverriddenFields) {
-        val warmingTime =testPerformanceWithCoroutines("pre warming")
+        val warmingTime = testPerformanceWithCoroutines("pre warming")
         val elapsedTime = testPerformanceWithCoroutines(fields)
         val elapsedTimeForOverriddenFields = testPerformanceWithCoroutines(overriddenFields)
         val elapsedTimeAnnotatedFields = testPerformanceWithCoroutines(annotatedFields)
@@ -184,17 +182,17 @@ data class OverriddenFields(
 ) {
     override fun toString(): String {
         return "${this.javaClass.simpleName}(" +
-                "stringDate=${ProtectedField.hideDate(stringDate)}, " +
-                "date=${ProtectedField.hideDate(date)}, " +
-                "dateWithPattern=${ProtectedField.hideDate(dateWithPattern)}, " +
-                "email=${ProtectedField.hideEmail(email)}, " +
-                "text=${ProtectedField.hideText(text)}, " +
-                "textWithMoreVisibility=${ProtectedField.hideText(textWithMoreVisibility)}, " +
-                "number=${ProtectedField.hideNumber(number)}, " +
-                "numberWithMoreVisibility=${ProtectedField.hideNumber(numberWithMoreVisibility)}, " +
-                "annotatedInnerClass=$annotatedInnerClass, " +
-                "notAnnotatedInnerClass=$notAnnotatedInnerClass" +
-                ")"
+            "stringDate=${ProtectedField.hideDate(stringDate)}, " +
+            "date=${ProtectedField.hideDate(date)}, " +
+            "dateWithPattern=${ProtectedField.hideDate(dateWithPattern)}, " +
+            "email=${ProtectedField.hideEmail(email)}, " +
+            "text=${ProtectedField.hideText(text)}, " +
+            "textWithMoreVisibility=${ProtectedField.hideText(textWithMoreVisibility)}, " +
+            "number=${ProtectedField.hideNumber(number)}, " +
+            "numberWithMoreVisibility=${ProtectedField.hideNumber(numberWithMoreVisibility)}, " +
+            "annotatedInnerClass=$annotatedInnerClass, " +
+            "notAnnotatedInnerClass=$notAnnotatedInnerClass" +
+            ")"
     }
 }
 
@@ -205,10 +203,10 @@ data class OverriddenInnerClass(
 ) {
     override fun toString(): String {
         return "${this.javaClass.simpleName}(" +
-                "someText=${ProtectedField.hideText(someText)}, " +
-                "map=$map, " +
-                "list=$list" +
-                ")"
+            "someText=${ProtectedField.hideText(someText)}, " +
+            "map=$map, " +
+            "list=$list" +
+            ")"
     }
 }
 

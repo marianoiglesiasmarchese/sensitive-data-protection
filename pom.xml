@@ -10,8 +10,8 @@
 	</parent>
 	<groupId>com.sensitive</groupId>
 	<artifactId>info</artifactId>
-	<version>0.0.1</version>
-	<name>info</name>
+	<version>0.1.0</version>
+	<name>sensitive data protection</name>
 	<description>Sensitive information obfuscation project</description>
 	<properties>
 		<java.version>11</java.version>
@@ -63,6 +63,9 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<classifier>exec</classifier>
+				</configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.jetbrains.kotlin</groupId>
