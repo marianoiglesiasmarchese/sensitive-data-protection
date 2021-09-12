@@ -50,7 +50,7 @@ this is necessary because it will override the custom logging configuration defi
 * `@HideNumber`
   * Can be used on **Longs**. It allows us to configure the length of the number that won't be obfuscated. By default, it's configured up as 2.
 
-#### That's it! here you will find a [test repository]('https://github.com/marianoiglesiasmarchese/sensitive-data-protection-usage') with an example of use and a performance measurement.
+***That's it!*** here you will find a [test repository](https://github.com/marianoiglesiasmarchese/sensitive-data-protection-usage) with an example of use and a performance measurement.
 
 -----------------------------------
 ## Constraints
