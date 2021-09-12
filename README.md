@@ -38,11 +38,14 @@ gradle dependency
 gradle example
 ```
 This is necessary because it will override the custom logging configuration defined as part of this project. 
+
 3. Add the `@Sensitive` annotation to the class that you desire to add attributes obfuscation.
+
+
 4. Use the desired annotations to obfuscate your sensitive attributes. The current set of available annotations is:
 
 * `@HideDate`
-  * Can be used on **LocalDateTime, Date, and String types**. It also allows you to configure the pattern used to print it. By default, it's configured by default with "MM/dd/yyyy" pattern.
+  * Can be used on **LocalDateTime, Date, and String types**. It also allows you to configure the pattern used to print it. By default, it's configured by default with **MM/dd/yyyy** pattern.
   * ***Due to the use of regex and date patterns at the same time, this is the most time-consuming annotation. Please use it carefully.***   
 * `@HideText`
   * Can be used on **Strings**. It allows us to configure the length of the word that won't be obfuscated. By default, it's configured as 2.
