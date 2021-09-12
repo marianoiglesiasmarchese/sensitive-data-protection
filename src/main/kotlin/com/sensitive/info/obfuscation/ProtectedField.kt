@@ -27,14 +27,11 @@ sealed class ProtectedField {
             val showFirstAndLastChars = 3
             return try {
                 val numberStr = number.toString()
-                val hiddenChars =
-                    numberStr.substring(showFirstAndLastChars, number.toString().length - showFirstAndLastChars)
-                        .replace(SensitiveDataRegex.ONLY_DIGITS_REGEX.regex, "*")
-                numberStr.replaceRange(
-                    showFirstAndLastChars,
-                    number.toString().length - showFirstAndLastChars,
-                    hiddenChars
-                )
+                val rangeLength = numberStr.length - showFirstAndLastChars
+                val hiddenChars = "*".repeat(rangeLength)
+//                val hiddenChars = numberStr.substring(showFirstAndLastChars, rangeLength)
+//                        .replace(SensitiveDataRegex.ONLY_DIGITS_REGEX.regex, "*")
+                numberStr.replaceRange(showFirstAndLastChars, rangeLength, hiddenChars)
             } catch (ex: Exception) {
                 "***LONG_OBFUSCATION_ERROR***"
             }
@@ -46,9 +43,11 @@ sealed class ProtectedField {
         fun hideText(text: String): String {
             val showFirstAndLastChars = 2
             return try {
-                val hiddenChars = text.substring(showFirstAndLastChars, text.length - showFirstAndLastChars)
-                    .replace(SensitiveDataRegex.ONLY_CHARACTERS_REGEX.regex, "*")
-                text.replaceRange(showFirstAndLastChars, text.length - showFirstAndLastChars, hiddenChars)
+                val rangeLength = text.length - showFirstAndLastChars
+                val hiddenChars = "*".repeat(rangeLength)
+//                val hiddenChars = text.substring(showFirstAndLastChars, rangeLength)
+//                    .replace(SensitiveDataRegex.ONLY_CHARACTERS_REGEX.regex, "*")
+                text.replaceRange(showFirstAndLastChars, rangeLength, hiddenChars)
             } catch (ex: Exception) {
                 "***TEXT_OBFUSCATION_ERROR***"
             }
@@ -56,6 +55,9 @@ sealed class ProtectedField {
 
         fun hideDate(date: String): String {
             return try {
+//                date.replaceRange(0, 1, "**")
+//                    .replaceRange(3, 4, "**")
+//                    .replaceRange(6, 7, "**")
                 date.replace(SensitiveDataRegex.ONLY_DIGITS_REGEX.regex, "*")
             } catch (ex: Exception) {
                 "***STRING_DATE_OBFUSCATION_ERROR***"
@@ -64,7 +66,11 @@ sealed class ProtectedField {
 
         fun hideDate(date: Date, pattern: String = "MM/dd/yyyy"): String {
             return try {
-                DateUtil.convertDateToString(date, pattern).replace(SensitiveDataRegex.ONLY_DIGITS_REGEX.regex, "*")
+//                date.toString().replaceRange(0, 1, "**")
+//                    .replaceRange(3, 4, "**")
+//                    .replaceRange(6, 7, "**")
+                date.toString().replace(SensitiveDataRegex.ONLY_DIGITS_REGEX.regex, "*")
+//                DateUtil.convertDateToString(date, pattern).replace(SensitiveDataRegex.ONLY_DIGITS_REGEX.regex, "*")
             } catch (ex: Exception) {
                 "***DATE_OBFUSCATION_ERROR***"
             }
@@ -72,7 +78,11 @@ sealed class ProtectedField {
 
         fun hideDate(date: LocalDate, pattern: String = "MM/dd/yyyy"): String {
             return try {
-                DateUtil.convertDateToString(date, pattern).replace(SensitiveDataRegex.ONLY_DIGITS_REGEX.regex, "*")
+//                date.toString().replaceRange(0, 1, "**")
+//                    .replaceRange(3, 4, "**")
+//                    .replaceRange(6, 7, "**")
+                date.toString().replace(SensitiveDataRegex.ONLY_DIGITS_REGEX.regex, "*")
+//                DateUtil.convertDateToString(date, pattern).replace(SensitiveDataRegex.ONLY_DIGITS_REGEX.regex, "*")
             } catch (ex: Exception) {
                 "***LOCAL_DATE_OBFUSCATION_ERROR***"
             }
@@ -82,7 +92,7 @@ sealed class ProtectedField {
             return try {
                 val matchedValues = SensitiveDataRegex.EMAIL_SENSITIVE_POSITION_GROUPS.regex.find(email)?.groupValues!!
                 val publicChars = matchedValues[1]
-                val hiddenChars = matchedValues[2].replace(Regex("."), "*")
+                val hiddenChars = "*".repeat(matchedValues[2].length)
                 val domainName = matchedValues[3]
                 publicChars + hiddenChars + domainName
             } catch (ex: Exception) {
@@ -97,8 +107,8 @@ sealed class ProtectedField {
 
     class ProtectedDateField<T>(private val date: T) : ProtectedField() {
         override fun toString() = when (date) {
-            is Date -> hideDate(date)
             is String -> hideDate(date)
+            is Date -> hideDate(date)
             is LocalDate -> hideDate(date)
             else -> "Date format not supported"
         }
