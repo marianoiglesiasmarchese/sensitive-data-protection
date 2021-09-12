@@ -2,8 +2,61 @@
 -----------------------------------
 This project targets to those who had troubles making good code once 
 they faced the management of sensitive data information 
-within the Java/Kotlin application logs
+within the Java/Kotlin application logs.
 
+-----------------------------------
+## How to use it?
+1. depending on your project configuration, add one of the following dependencies:
+* on maven
+```
+<dependency>
+  <groupId>com.sensitive</groupId>
+  <artifactId>info</artifactId>
+  <version>0.1.0</version>
+</dependency>
+```
+* on grable
+```
+gradle dependency
+```
+2. exclude spring-boot-starter-logging configuration dependency:
+* on maven
+```
+<dependency>
+  <groupId>org.springframework.boot</groupId>
+  <artifactId>spring-boot-starter</artifactId>
+  <exclusions>
+    <exclusion>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-logging</artifactId>
+    </exclusion>
+  </exclusions>
+</dependency>
+```
+* on gradle
+```
+gradle example
+```
+this is necessary because it will override the custom logging configuration defined as part of this project. 
+3. add the `@Sensitive` annotation to the class that you desire to add attributes obfuscation.
+4. use the desired annotations to obfuscate your sensitive attributes. The current set of available annotations is:
+
+* `@HideDate`
+  * Can be used on **LocalDateTime, Date, and String types**. It also allows you to configure the pattern used to print it. By default, it's configured by default with "MM/dd/yyyy" pattern.
+* `@HideText`
+  * Can be used on **Strings**. It allows us to configure the length of the word that won't be obfuscated. By default, it's configured as 2.
+* `@HideEmail`
+  * Can be used on **Strings** and will seek for the email shape, leaving visible par of it but not the full text.
+* `@HideNumber`
+  * Can be used on **Longs**. It allows us to configure the length of the number that won't be obfuscated. By default, it's configured up as 2.
+
+#### That's it! here you will find a [test repository]('https://github.com/marianoiglesiasmarchese/sensitive-data-protection-usage') with an example of use and a performance measurement.
+
+-----------------------------------
+## Constraints
+* Only classes with `@Sensitive` and some sensitive field annotation will be obfuscated, if not the to string will be the default one.
+* Only one sensitive annotation is allowed by field.
+* `@Sensitive` should be through all the path of classes that want to be protected. You can find an example inspecting `Runner.kt` file.
 -----------------------------------
 ## Known issues or pending tasks:
 * [x] Sensitive fields annotations seems to be not detected
@@ -21,10 +74,15 @@ within the Java/Kotlin application logs
 * [ ] Try to replace the .xml by a .properties
 * [ ] Improve readme, describe:
   * [ ] scope
-  * [ ] how to use it
+  * [x] how to use it
   * [ ] performance constraints
   * [ ] licence
   * [ ] publish it in our networks (Github, Linkedin, Blog)
+* [ ] add support to more data types 
+  * [ ] maps
+  * [ ] lists
+* [ ] add support to more standard formats
+  * [ ] urls
 -----------------------------------
 ## Future improvements:
 * [ ] Improve performance (analyze KAPT to run code on compiling time)
@@ -119,11 +177,7 @@ logger.appLogger.level=INFO
 logger.appLogger.appenderRefs=customAppender
 logger.appLogger.appenderRef.customAppender.ref=CUSTOMAPPENDER
 ``` 
------------------------------------
-## Constraints
-* classes with @Sensitive and some sensitive field annotation will be obfuscated
-* by field only one sensitive annotation is allowed 
-* @Sensitive should be through all the path of classes that want to be protected
+
 -----------------------------------
 ## Performance
 All the tests were performed with 100K coroutines running at once.

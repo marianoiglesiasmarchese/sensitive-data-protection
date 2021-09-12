@@ -10,10 +10,10 @@ annotation class Sensitive
 annotation class HideDate(val pattern: String = "MM/dd/yyyy")
 
 @Target(AnnotationTarget.FIELD)
-annotation class HideText(val shadow: Long = 2)
+annotation class HideText(val visibility: Long = 2)
 
 @Target(AnnotationTarget.FIELD)
 annotation class HideEmail
 
 @Target(AnnotationTarget.FIELD)
-annotation class HideNumber(val shadow: Long = 2)
+annotation class HideNumber(val visibility: Long = 2)

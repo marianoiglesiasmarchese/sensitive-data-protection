@@ -14,9 +14,14 @@ import org.springframework.boot.CommandLineRunner
 import org.springframework.context.annotation.Bean
 import org.springframework.stereotype.Component
 import java.time.LocalDate
+import kotlin.system.measureNanoTime
 
 @Component
 class Runner {
+
+    companion object {
+        const val NUM_OF_COROUTINES = 100000
+    }
 
     private val logger = LoggerFactory.getLogger(Runner::class.java)
 
@@ -76,43 +81,39 @@ class Runner {
                 double = 30.0
             )
         )
-//        testIt(annotatedFields)
 //        performanceTest(annotatedFields, fields, overriddenFields)
     }
 
     private fun performanceTest(annotatedFields: AnnotatedFields, fields: Fields, overriddenFields: OverriddenFields) {
-        val warmingTime = testPerformanceWithCoroutines("pre warming")
-        val elapsedTime = testPerformanceWithCoroutines(fields)
-        val elapsedTimeForOverriddenFields = testPerformanceWithCoroutines(overriddenFields)
-        val elapsedTimeAnnotatedFields = testPerformanceWithCoroutines(annotatedFields)
+        val warmingTime = testPerformanceWithCoroutines("warmingTime", "pre warming")
+        val elapsedTime = testPerformanceWithCoroutines("nonAnnotatedFields", fields)
+        val elapsedTimeForOverriddenFields = testPerformanceWithCoroutines("overriddenFields", overriddenFields)
+        val elapsedTimeAnnotatedFields = testPerformanceWithCoroutines("annotatedFields", annotatedFields)
         logger.info("Sensitive data protection --warmingTime --elapsedTime: [{} seconds]", warmingTime / 1000)
         logger.info("Sensitive data protection --nonAnnotatedFields --elapsedTime: [{} seconds]", elapsedTime / 1000)
-        logger.info("Sensitive data protection --overriddenFields --elapsedTime: [{} seconds]", elapsedTimeForOverriddenFields / 1000)
-        logger.info("Sensitive data protection --annotatedFields --elapsedTime: [{} seconds]", elapsedTimeAnnotatedFields / 1000)
-    }
-
-    private fun testIt(annotatedFields: AnnotatedFields) {
-        logger.info("Sensitive data protection --annotatedFields: [{}]", annotatedFields)
-        logger.trace("A TRACE Message")
-        logger.debug("A DEBUG Message")
-        logger.info("An INFO Message --[{}] --[{}] --$annotatedFields", "param1", "param2")
-        logger.warn("A WARN Message")
-        logger.error("An ERROR Message")
+        logger.info(
+            "Sensitive data protection --overriddenFields --elapsedTime: [{} seconds]",
+            elapsedTimeForOverriddenFields / 1000
+        )
+        logger.info(
+            "Sensitive data protection --annotatedFields --elapsedTime: [{} seconds]",
+            elapsedTimeAnnotatedFields / 1000
+        )
     }
 
     /**
      * If you wanna test it with a huge set of logs just add `-Dkotlinx.coroutines.debug` as part of the VM options
      */
-    private fun testPerformanceWithCoroutines(testClass: Any): Double {
-        val start = System.nanoTime()
-        runBlocking {
-            repeat(100000) { // launch a lot of coroutines
-                launch(CoroutineName(it.toString())) {
-                    logger.info("Sensitive data protection --annotatedFields: [{}]", testClass)
+    private fun testPerformanceWithCoroutines(logMessage: String, testClass: Any): Double {
+        return measureNanoTime {
+            runBlocking {
+                repeat(NUM_OF_COROUTINES) { // launch a lot of coroutines
+                    launch(CoroutineName(it.toString())) {
+                        logger.info("Sensitive data protection --$logMessage: [{}]", testClass)
+                    }
                 }
             }
-        }
-        return ((System.nanoTime().toDouble() - start) / 1000000)
+        }.toDouble() / 1000000
     }
 }
 
